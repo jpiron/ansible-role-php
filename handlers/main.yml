@@ -3,10 +3,11 @@
   service:
     name: "{{ php_webserver_daemon }}"
     state: restarted
-  notify: restart php-fpm
+  notify: restart php-fpm{{ lookup('vars', ansible_loop_var, default='') }}
   when: php_enable_webserver
 
-- name: restart php-fpm
+# handlers can't use host-specific variables therefore we can't use role_loop_value.
+- name: restart php-fpm{{ lookup('vars', ansible_loop_var, default='') }}
   service:
     name: "{{ php_fpm_daemon }}"
     state: "{{ php_fpm_handler_state }}"

@@ -15,6 +15,11 @@
     php_default_version_debian: "{{ __php_default_version_debian }}"
   when: php_default_version_debian is not defined and ansible_os_family == 'Debian'
 
+- name: Register role loop value if any
+  set_fact:
+    role_loop_value: "{{ lookup('vars', ansible_loop_var) }}"
+  when: ansible_loop_var is defined
+
 - name: Define the name of the JSON extension package on Debian for PHP <8.
   set_fact:
     __php_json_package_debian: "{{ 'php' + php_default_version_debian + '-json' }}"
