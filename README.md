@@ -154,6 +154,23 @@ The platform-specific opcache configuration filename. Generally the default shou
 Additionally, any variable matching the `^php_opcache_.*$` regex will be converted into the corresponding opcache ini variable. \
 For instance, `php_opcache_jit_buffer_size: 256` will automatically be converted into `opcache.jit_buffer_size=256` in the opcache ini file.
 
+The role also optionnaly supports context specific opcache configuration.\
+If you have:
+
+    ```yaml
+    php_extension_conf_paths:
+        - /etc/php/{{ php_default_version_debian }}/fpm/conf.d
+        - /etc/php/{{ php_default_version_debian }}/apache2/conf.d
+        - /etc/php/{{ php_default_version_debian }}/cli/conf.d
+    ```
+
+contexts in this case are `fpm`, `apache2` and `cli`.
+
+You can define context-specific opcache configuration using the following syntax `php_<context>_opcache_<XXX>`.\
+For instance, `php_cli_opcache_jit_buffer_size: 256`. This will set `opcache.jit_buffer_size=256` only in the `/etc/php/{{ php_default_version_debian }}/cli/conf.d/10-opcache.ini` file.\
+It takes precedence over 'context-less' variables. This means that is you have both `php_opcache_jit_buffer_size: 128` and `php_cli_opcache_jit_buffer_size: 256`,\
+this will set `opcache.jit_buffer_size=128` in the `/etc/php/{{ php_default_version_debian }}/fpm/conf.d/10-opcache.ini` and `/etc/php/{{ php_default_version_debian }}/apache2/conf.d/10-opcache.ini` files and set `opcache.jit_buffer_size=256` in the `/etc/php/{{ php_default_version_debian }}/cli/conf.d/10-opcache.ini` file.
+
 ### APCu-related Variables
 
     php_enable_apc: true

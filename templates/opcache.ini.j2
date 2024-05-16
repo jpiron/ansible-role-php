@@ -1,5 +1,5 @@
 zend_extension={{ php_opcache_zend_extension }}
-{% for key, var in opcache_vars.items() %}
+{% for key, var in template_opcache_vars.items() %}
 opcache.{{ key }}={{ var }}
 {% endfor %}
 {% if php_opcache_blacklist_filename != '' %}

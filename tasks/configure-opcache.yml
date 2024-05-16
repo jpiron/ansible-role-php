@@ -25,6 +25,18 @@
     force: true
     mode: 0644
   with_items: "{{ php_extension_conf_paths }}"
+  vars:
+    opcache_var_context: "{{ item.split('/')[-2:-1] | first }}"
+    context_opcache_var_names: "{{ lookup('varnames', '^php_' + opcache_var_context + '_opcache_.*$', wantlist=True) }}"
+    context_opcache_var_values: "{{ lookup('vars', *context_opcache_var_names, wantlist=True) }}"
+    context_opcache_vars: "{{ context_opcache_var_names
+                                        | map('regex_replace', '^(php_' + opcache_var_context + '_opcache_)', '')
+                                        | map('community.general.dict_kv', 'key')
+                                      | zip(context_opcache_var_values
+                                        | map('community.general.dict_kv', 'value'))
+                                      | map('combine')
+                                      | items2dict }}"
+    template_opcache_vars: "{{ opcache_vars | combine(context_opcache_vars) }}"
   when: php_opcache_enable | bool
   notify: restart webserver
 
